@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Buddy - Your Intelligent Learning Companion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+    
+    <!-- Animated Particles -->
+    <div id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar glass-effect">
+        <div class="nav-brand logo-3d">
+            <span class="logo-icon"></span>
+            <span data-i18n="brand_name">AI Study Buddy</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home" class="nav-link hover-glow" data-i18n="nav_home">Home</a></li>
+            <li><a href="#features" class="nav-link hover-glow" data-i18n="nav_features">Features</a></li>
+            <li><a href="#ai-chat" class="nav-link hover-glow" data-i18n="nav_ai_tutor">AI Tutor</a></li>
+            <li><a href="#summarizer" class="nav-link hover-glow">Summarizer</a></li>
+            <li><a href="#flashcards" class="nav-link hover-glow">Flashcards</a></li>
+            
+            <!-- Language Dropdown (Clean Arrow Only) -->
+            <li class="language-selector">
+                <button id="languageToggle" class="glass-effect language-toggle-btn">
+                    <span id="currentLang">🇺🇸</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div id="languageDropdown" class="language-dropdown glass-effect" style="display: none;">
+                    <div class="dropdown-item" data-value="en">🇺🇸 English</div>
+                    <div class="dropdown-item" data-value="es">🇪🇸 Español</div>
+                    <div class="dropdown-item" data-value="fr">🇫🇷 Français</div>
+                    <div class="dropdown-item" data-value="hi">🇮🇳 हिन्दी</div>
+                    <div class="dropdown-item" data-value="te">🇮🇳 తెలుగు</div>
+                </div>
+            </li>
+            
+            <!-- User Profile / Get Started Button -->
+            <li id="authSection">
+                <button class="btn-3d btn-primary" id="getStartedBtn" data-i18n="btn_get_started">Get Started</button>
+                <div id="userProfile" class="user-profile" style="display: none;">
+                    <div class="user-avatar">
+                        <span id="userAvatarIcon"></span>
+                    </div>
+                    <span id="userName" class="user-name"></span>
+                    <button id="logoutBtn" class="logout-btn" title="Logout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge glass-effect animate-float">
+                <span class="badge-pulse"></span>
+                <span data-i18n="hero_badge">🚀 AI-Powered Learning</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line" data-i18n="hero_title_1">Master Any Subject</span>
+                <span class="title-line gradient-text" data-i18n="hero_title_2">With AI Intelligence</span>
+            </h1>
+            <p class="hero-description" data-i18n="hero_desc">
+                Experience the future of education with personalized AI tutoring, 
+                interactive 3D visualizations, and adaptive learning paths.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn-3d btn-primary btn-large">
+                    <span data-i18n="btn_start_learning">Start Learning</span>
+                    <div class="btn-shine"></div>
+                </button>
+                <button class="btn-3d btn-secondary btn-large">
+                    <span data-i18n="btn_watch_demo">Watch Demo</span>
+                </button>
+            </div>
+            <div class="hero-stats glass-effect">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="10000">0</div>
+                    <div class="stat-label" data-i18n="stat_students">Active Students</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="500">0</div>
+                    <div class="stat-label" data-i18n="stat_tutors">AI Tutors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="98">0</div>
+                    <div class="stat-label" data-i18n="stat_success">Success Rate %</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-3d-container">
+            <div class="floating-card card-1 glass-effect">
+                <div class="card-icon">📚</div>
+                <div class="card-title" data-i18n="card_notes">Smart Notes</div>
+            </div>
+            <div class="floating-card card-2 glass-effect">
+                <div class="card-icon">🎯</div>
+                <div class="card-title" data-i18n="card_goals">Goal Tracking</div>
+            </div>
+            <div class="floating-card card-3 glass-effect">
+                <div class="card-icon">🏆</div>
+                <div class="card-title" data-i18n="card_achievements">Achievements</div>
+            </div>
+            <div class="floating-card card-4 glass-effect">
+                <div class="card-icon">⚡</div>
+                <div class="card-title" data-i18n="card_quiz">Quick Quiz</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2 class="section-title" data-i18n="features_title">Powerful Features</h2>
+            <p class="section-subtitle" data-i18n="features_subtitle">Everything you need to excel in your studies</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card glass-effect card-3d">
+                <div class="feature-icon-wrapper"><div class="feature-icon">🤖</div></div>
+                <h3 data-i18n="feat_ai_title">AI Tutor</h3>
+                <p data-i18n="feat_ai_desc">24/7 intelligent tutoring with personalized explanations and instant feedback.</p>
+                <div class="feature-glow"></div>
+            </div>
+            <div class="feature-card glass-effect card-3d">
+                <div class="feature-icon-wrapper"><div class="feature-icon">📊</div></div>
+                <h3 data-i18n="feat_analytics_title">Analytics Dashboard</h3>
+                <p data-i18n="feat_analytics_desc">Track your progress with beautiful visualizations and detailed insights.</p>
+                <div class="feature-glow"></div>
+            </div>
+            <div class="feature-card glass-effect card-3d">
+                <div class="feature-icon-wrapper"><div class="feature-icon">🎮</div></div>
+                <h3 data-i18n="feat_gamified_title">Gamified Learning</h3>
+                <p data-i18n="feat_gamified_desc">Earn badges, climb leaderboards, and make learning fun and engaging.</p>
+                <div class="feature-glow"></div>
+            </div>
+            <div class="feature-card glass-effect card-3d">
+                <div class="feature-icon-wrapper"><div class="feature-icon">📝</div></div>
+                <h3 data-i18n="feat_quizzes_title">Smart Quizzes</h3>
+                <p data-i18n="feat_quizzes_desc">AI-generated quizzes adapted to your learning level and progress.</p>
+                <div class="feature-glow"></div>
+            </div>
+            <div class="feature-card glass-effect card-3d">
+                <div class="feature-icon-wrapper"><div class="feature-icon">⏱️</div></div>
+                <h3 data-i18n="feat_pomodoro_title">Pomodoro Timer</h3>
+                <p data-i18n="feat_pomodoro_desc">Boost productivity with built-in focus timers and break reminders.</p>
+                <div class="feature-glow"></div>
+            </div>
+            <div class="feature-card glass-effect card-3d">
+                <div class="feature-icon-wrapper"><div class="feature-icon">🔄</div></div>
+                <h3 data-i18n="feat_spaced_title">Spaced Repetition</h3>
+                <p data-i18n="feat_spaced_desc">Optimize memory retention with intelligent review scheduling.</p>
+                <div class="feature-glow"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Chat Section -->
+    <section class="ai-chat-section" id="ai-chat">
+        <div class="chat-container glass-effect">
+            <div class="chat-header">
+                <div class="chat-avatar">
+                    <div class="avatar-ring"></div>
+                    🤖
+                </div>
+                <div class="chat-info">
+                    <h3 data-i18n="chat_ai_title">AI Study Assistant</h3>
+                    <span class="chat-status online" data-i18n="chat_status_online">● Online</span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <div class="message-bubble" data-i18n="chat_welcome">
+                        Hi! I'm your AI study buddy. How can I help you learn today?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Input Container -->
+            <div class="chat-input-container">
+                <input type="file" id="pdf-upload" accept=".pdf,.txt,.docx" style="display: none;">
+                
+                <button class="chat-icon-btn" id="pdf-btn" title="Upload Document">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                </button>
+
+                <button class="chat-icon-btn" id="mic-btn" title="Record Voice">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                </button>
+
+                <input type="text" id="chatInput" placeholder="Ask me anything or upload a file..." class="chat-input" data-i18n-placeholder="chat_placeholder">
+                <button class="chat-send-btn" id="chatSend">
+                    <span data-i18n="chat_send">Send</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="chat-status-msg" class="chat-status-msg"></div>
+        </div>
+    </section>
+
+    <!-- Notes Summarizer Section -->
+    <section class="tools-section" id="summarizer">
+        <div class="section-header">
+            <h2 class="section-title">Notes Summarizer</h2>
+            <p class="section-subtitle">Paste your long notes and let AI condense them instantly</p>
+        </div>
+        <div class="summarizer-container glass-effect">
+            <textarea id="notesInput" class="glass-input" placeholder="Paste your study notes here..."></textarea>
+            <button id="summarizeBtn" class="btn-3d btn-primary">
+                <span>✨ Summarize Notes</span>
+            </button>
+            <div id="summaryOutput" class="summary-output glass-effect" style="display: none;"></div>
+        </div>
+    </section>
+
+    <!-- 3D Flashcards Section -->
+    <section class="tools-section" id="flashcards">
+        <div class="section-header">
+            <h2 class="section-title">AI Flashcards</h2>
+            <p class="section-subtitle">Turn any topic into interactive 3D flashcards</p>
+        </div>
+        <div class="flashcard-generator glass-effect">
+            <textarea id="flashcardInput" class="glass-input" placeholder="Enter a topic or paste notes to generate flashcards..."></textarea>
+            <button id="generateCardsBtn" class="btn-3d btn-primary">
+                <span>🎴 Generate Flashcards</span>
+            </button>
+            <div id="flashcardsContainer" class="flashcards-grid"></div>
+        </div>
+    </section>
+
+    <!-- AI Quiz Generator Section -->
+    <section class="tools-section" id="quiz">
+        <div class="section-header">
+            <h2 class="section-title">AI Quiz Generator</h2>
+            <p class="section-subtitle">Test your knowledge with AI-generated multiple-choice questions</p>
+        </div>
+        <div class="quiz-generator glass-effect">
+            <textarea id="quizInput" class="glass-input" placeholder="Enter a topic (e.g., 'Photosynthesis') or paste your notes to generate a quiz..."></textarea>
+            <button id="generateQuizBtn" class="btn-3d btn-primary">
+                <span>📝 Generate Quiz</span>
+            </button>
+            <div id="quizContainer"></div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal" style="display: none;">
+        <div class="login-modal-content glass-effect">
+            <div class="login-header">
+                <h2>Welcome Back! 👋</h2>
+                <p>Enter your name to start learning</p>
+            </div>
+            <div class="login-form">
+                <input type="text" id="usernameInput" placeholder="Enter your name" class="login-input" maxlength="20">
+                <button id="loginBtn" class="btn-3d btn-primary login-btn">
+                    <span>Get Started</span>
+                </button>
+                <button id="cancelLogin" class="login-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts at the very bottom -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

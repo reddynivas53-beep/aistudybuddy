@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Study Material - AI Study Buddy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .file-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .file-info.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar.show {
+            display: block;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .extracted-text {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .extracted-text.show {
+            display: block;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Upload Study Material</h1>
+        <p class="subtitle">Upload PDF, TXT, or DOCX files to extract text</p>
+        
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="upload-area" id="uploadArea">
+                <p style="margin-bottom: 20px; color: #666;">
+                    Drag & drop your file here or click to browse
+                </p>
+                <input type="file" id="fileInput" name="file" accept=".pdf,.txt,.docx">
+                <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Choose File
+                </button>
+                <div class="file-info" id="fileInfo">
+                    <strong>Selected:</strong> <span id="fileName"></span>
+                </div>
+            </div>
+            
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <button type="submit" class="upload-btn" style="width: 100%;">
+                Upload & Extract Text
+            </button>
+        </form>
+        
+        <div class="error" id="errorMsg"></div>
+        
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-label">File Size</div>
+                <div class="stat-value" id="fileSize"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Characters</div>
+                <div class="stat-value" id="charCount"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Words</div>
+                <div class="stat-value" id="wordCount"></div>
+            </div>
+        </div>
+        
+        <div class="extracted-text" id="extractedText">
+            <h3 style="margin-bottom: 15px;">📄 Extracted Text:</h3>
+            <pre id="textContent" style="white-space: pre-wrap; line-height: 1.6;"></pre>
+        </div>
+        
+        <a href="/" class="back-link">← Back to Home</a>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const uploadForm = document.getElementById('uploadForm');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const errorMsg = document.getElementById('errorMsg');
+        const stats = document.getElementById('stats');
+        const extractedText = document.getElementById('extractedText');
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileInfo(files[0].name);
+            }
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                updateFileInfo(fileInput.files[0].name);
+            }
+        });
+        
+        function updateFileInfo(name) {
+            fileName.textContent = name;
+            fileInfo.classList.add('show');
+        }
+        
+        // Form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!fileInput.files.length) {
+                showError('Please select a file first');
+                return;
+            }
+            
+            const formData = new FormData(uploadForm);
+            progressBar.classList.add('show');
+            progressFill.style.width = '30%';
+            errorMsg.classList.remove('show');
+            stats.style.display = 'none';
+            extractedText.classList.remove('show');
+            
+            try {
+                progressFill.style.width = '60%';
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                progressFill.style.width = '100%';
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Show stats
+                    document.getElementById('fileSize').textContent = data.file_size;
+                    document.getElementById('charCount').textContent = data.text_length.toLocaleString();
+                    document.getElementById('wordCount').textContent = data.word_count.toLocaleString();
+                    stats.style.display = 'flex';
+                    
+                    // Show extracted text
+                    document.getElementById('textContent').textContent = data.extracted_text;
+                    extractedText.classList.add('show');
+                    
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        progressFill.style.width = '0%';
+                    }, 500);
+                } else {
+                    showError(data.error || 'Upload failed');
+                    progressBar.classList.remove('show');
+                    progressFill.style.width = '0%';
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+                progressBar.classList.remove('show');
+                progressFill.style.width = '0%';
+            }
+        });
+        
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
